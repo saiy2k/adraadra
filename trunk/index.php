@@ -7,6 +7,11 @@ $fbconfig['appid' ]  = "";
 $fbconfig['api'   ]  = "";
 $fbconfig['secret']  = "";
 
+//Set Database Access Tokens
+$db['username'] = "";
+$db['password'] = "";
+$db['dbname'] = "";
+
 //Initiate Facebook object with the app settings
 $facebook = new Facebook(array(
   'appId'  => $fbconfig['appid' ],
@@ -40,10 +45,10 @@ else		//If Session is not valid, provide the user with Login URL to create a val
 }
 
 //Establish connection to database
-$conn = mysql_connect("localhost", "", "");
+$conn = mysql_connect("localhost", $db['username'], $db['password']);
 
 //Set current Database
-mysql_select_db("", $conn);
+mysql_select_db($db['dbname'], $conn);
 
 //Try to retrieve the user data
 $result = mysql_query("select * from userscore where user = " . $uid, $conn);
@@ -76,6 +81,12 @@ foreach ($appusers  as &$value)
 	$usr = $facebook->api('/'.$value);
 	array_push($frndname_arr, $usr['name']);
 	array_push($frnduid_arr, $value);
+
+	//Following code is to check whether everything goes fine upto this point, by printing the Name and UID's of App Users.
+	//echo('User: ');
+	//echo($usr['name']);
+	//echo($value);
+	//echo('<br />');
 }
 
 //Join the Name and UID array into a string, in which individual names and UID's are separated with ','
@@ -93,7 +104,7 @@ $frnduid= implode(",", $frnduid_arr);
 //events like login() and logout() are written.
 
 	window.fbAsyncInit = function() {
-		FB.init({appId: '', status: true, cookie: true, xfbml: true});
+		FB.init({appId: '<?php echo($fbconfig['appid' ]); ?>, status: true, cookie: true, xfbml: true});
 
 		/* All the events registered */
                 FB.Event.subscribe('auth.login', function(response) {
@@ -183,9 +194,6 @@ $frnduid= implode(",", $frnduid_arr);
 	);
 }
 </script>
-
-UNDER MAINTENANCE
-
 	<!--including SWF Object (http://code.google.com/p/swfobject/) -->
 	<script type="text/javascript" src="swfobject.js"></script>
 
